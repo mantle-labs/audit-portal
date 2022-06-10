@@ -1,0 +1,20 @@
+.list-group-item.active {
+    background-color: #212529;
+    border-color: #212529;
+}
+
+table {
+    table-layout:fixed;
+}
+
+table td {
+    overflow:hidden;
+    text-overflow: ellipsis;
+}
+
+.green{
+    background-color: greenyellow;
+}
+.bdtp-block{
+    overflow-wrap: break-word;
+}

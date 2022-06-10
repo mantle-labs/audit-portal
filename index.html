@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Mantle Audit Portal</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row row-cols-1">
+                <div class="col text-center">
+                    <h1>Welcome to mantle audit portal !</h1>
+                </div>
+            </div>
+
+            <div class="row row-cols-1">
+                <div class="col text-center">
+                    <label>Pointer: </label>
+                    <input id="pointer" type="text" value="3MwUmmsjsJc9uirBtfbErVVxz14n9SfdRVw">
+                    <button id="search" class="btn btn-dark" type="button">Search</button>
+                </div>
+            </div>
+
+            <div class="row row-cols-2">
+                <div class="col text-start">
+                    <button class="btn btn-dark dropdown-toggle" type="button" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Networks
+                      </button>
+
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a id="wavesMainnet" class="dropdown-item" href="#">Waves Mainnet </a></li>
+                        <li><a id="wavesTestnet" class="dropdown-item" href="#">Waves Testnet </a></li>
+                      </ul>
+                </div>
+                <div class="col text-end">
+                    <label>Node url: </label>
+                    <input id="nodeUrl" value="" disabled> </label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col text-center align-top">
+                    <h3>Available nodes for the selected network</h3>
+                </div>
+            </div>
+            <div class="row">
+                <ul id="networkLinks" class="list-group list-group-flush">
+                  </ul>
+            </div>
+            <div class="row text-center">
+                <h2>Transactions</h2>
+            </div>
+            <div class="row">
+                <table id="tansactions-table" class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="width: 2%;">#</th>
+                        <th scope="col">Transaction Id</th>
+                        <th scope="col">Data Hash</th>
+                        <th scope="col">Timestamp</th>
+                        <th scope="col">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+            </div>
+
+            <div class="row text-center">
+                <h2>Bdtp server</h2>
+            </div>
+            <div class="row text-center">
+                <button id="bdtp" class="btn btn-dark" type="button">fetch data from bdtp</button>
+            </div>
+            <div id="bdtp-data" class="row mb-5">
+
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/browse/raw-socket@1.7.0/index.js"></script>
+        
+        <script src="jsbn.js"></script>
+        <script src="jsbn2.js"></script>
+        <script src="base58.js"></script>
+
+        <script src="scripts.js"></script>
+        <script src="bdtp-client.js"></script>
+
+
+    </body>
+</html>
