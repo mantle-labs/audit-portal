@@ -35,6 +35,7 @@ $("#search").click(function(e){
                         <td>${new Date(tx.timestamp)}</td>
                     </tr>`).fadeIn(1000)
                 })
+                
                  
             })
         }).fail(function(){alert("cannot make call")});
