@@ -81,7 +81,6 @@ $(document).on("mouseenter", "tr", function(e){
 
     if(bdtpBlock.length){
         bdtpBlock.addClass("green")
-        console.log(this.id)
         $(`#${this.id}`).addClass("green")
     }
 })
