@@ -1,3 +1,9 @@
+var SOCKET_ID = 0
+
+function parsePointer(pointer){
+    return {chain: pointer.substring(0,3), add: pointer.substring(3)}
+}
+
 function stringToBytes(str){
     var bytes = []; 
 
@@ -10,34 +16,20 @@ function stringToBytes(str){
 
     return bytes
 }
-var SOCKET_ID = 0
-$("#bdtp").click(async function(e){
-    $("div#bdtp-data").empty()
 
-    if (chrome.sockets == undefined){
-        displayBytes(hc)
-        return
-    }
-    console.log("trying to set up socket...")
-    chrome.sockets.tcp.create({}, function(createInfo) {
-        SOCKET_ID = createInfo.socketId
-        chrome.sockets.tcp.connect(SOCKET_ID,
-          "localhost", 4444, sendDataHandler);
-      });
-})
 function sendDataHandler(){
     console.log("Connected ! sending pointer")
-    chain = "WAV"
-    add = base58.decode($("#pointer").val())
+    pointer = parsePointer($("#pointer").val())
+    pointer.add = base58.decode(pointer.add)
 
-    buff = new ArrayBuffer(chain.length + add.length +4)
+    buff = new ArrayBuffer(pointer.chain.length + pointer.add.length +4)
     buffArr = new Uint8Array(buff)
     for  (i = 0; i< buffArr.length; i++){
         if (i<3){
-            buffArr[i] = chain.charCodeAt(i)
+            buffArr[i] = pointer.chain.charCodeAt(i)
         }
         if(i>=3 && i < 29){
-          buffArr[i] = add[i-3]
+          buffArr[i] = pointer.add[i-3]
         }
         if (i>= 29){
           buffArr[i] =0
@@ -57,6 +49,10 @@ function sendDataHandler(){
       });
 }
 
+function receiveDataHandler(socketId){
+    console.log("ready to receive data")
+}
+
 function displayBytes(bytes){
     offset = 0;
     for (;;){
@@ -71,15 +67,26 @@ function displayBytes(bytes){
   return;
 }
 
-function receiveDataHandler(socketId){
-    console.log("ready to receive data")
-}
-
 function computeHashAndDisplaybytes(bytes, start, end){
     sha256(new Uint8Array(bytes.slice(start, end))).then(h => {
         $("#bdtp-data").append(`<div id="${h}" class="col bdtp-block">${bytes.slice(start, end)}</div>`)
      })
 }
+
+$("#bdtp").click(async function(e){
+    $("div#bdtp-data").empty()
+
+    if (chrome.sockets == undefined){
+        displayBytes(hc)
+        return
+    }
+    console.log("trying to set up socket...")
+    chrome.sockets.tcp.create({}, function(createInfo) {
+        SOCKET_ID = createInfo.socketId
+        chrome.sockets.tcp.connect(SOCKET_ID,
+          "localhost", 4444, sendDataHandler);
+      });
+})
 
 $(document).on("mouseenter", ".bdtp-block", function(e){
     tx = $(`#tx-${e.target.id}`)

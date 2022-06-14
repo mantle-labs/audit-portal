@@ -17,12 +17,14 @@ $("#search").click(function(e){
 
     setTimeout(function(){
         var node = $("#nodeUrl").val()
-        var pointer = $("#pointer").val()
+        var pointer = parsePointer($("#pointer").val())
+
         if (node == '' || pointer == ''){
             alert("node url or pointer is not set.")
             return
         }
-        $.get(`${node}/transactions/address/${pointer}/limit/1000`, function(data, status){
+        console.log(pointer)
+        $.get(`${node}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
             data[0].forEach((tx, i) => {
                 bytes = base58.decode(tx.attachment)
                 sha256(new Uint8Array(bytes)).then(h => {
@@ -64,18 +66,6 @@ function fillListGroup(links){
     })
 }
 
-async function sha256(msgBuffer) {
-    // hash the message
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-
-    // convert ArrayBuffer to Array
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-    // convert bytes to hex string                  
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-}
-
 $(document).on("mouseenter", "tr", function(e){
     h = this.id.substring(3, this.id.length)
     bdtpBlock = $(`#${h}`)
@@ -95,3 +85,15 @@ $(document).on("mouseleave", "tr", function(e){
         $(`#${this.id}`).removeClass("green")
     }
 })
+
+async function sha256(msgBuffer) {
+    // hash the message
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+    // convert ArrayBuffer to Array
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    // convert bytes to hex string                  
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
