@@ -23,7 +23,11 @@ $("#search").click(function(e){
             alert("node url or pointer is not set.")
             return
         }
-        console.log(pointer)
+        if (pointer.chain != "WAV"){
+            alert("chain not suported")
+            return
+        }
+        
         $.get(`${node}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
             data[0].forEach((tx, i) => {
                 bytes = base58.decode(tx.attachment)
