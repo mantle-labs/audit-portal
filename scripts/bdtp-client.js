@@ -39,13 +39,13 @@ function sendDataHandler(){
     chrome.sockets.tcp.send(SOCKET_ID, buffArr, receiveDataHandler)
 
     chrome.sockets.tcp.onReceive.addListener(function(info) {
-        if (info.socketId != SOCKET_ID)
-            console.log("data:")
+        if (info.socketId == SOCKET_ID){
             //we ne to slice first 4 bytes, its the data length
             bytes = Array.from(new Uint8Array(info.data)).slice(4)
             SOCKET_ID = 0
 
             displayBytes(bytes)
+        }   
       });
 }
 
