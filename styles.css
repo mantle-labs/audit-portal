@@ -18,3 +18,7 @@ table td {
 .bdtp-block{
     overflow-wrap: break-word;
 }
+
+html, body {
+    overflow-y: visible;
+}

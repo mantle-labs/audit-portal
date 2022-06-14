@@ -15,7 +15,7 @@ $("#bdtp").click(async function(e){
     $("div#bdtp-data").empty()
 
     if (chrome.sockets == undefined){
-        alert("must have chrome chrome.sockets.tcp extension https://developer.chrome.com/docs/apps/app_network/")
+        displayBytes(hc)
         return
     }
     console.log("trying to set up socket...")
@@ -52,20 +52,23 @@ function sendDataHandler(){
             //we ne to slice first 4 bytes, its the data length
             bytes = Array.from(new Uint8Array(info.data)).slice(4)
             SOCKET_ID = 0
-            console.log(SOCKET_ID)
 
-            offset = 0;
-            for (;;){
-                let end = offset+140 > bytes.length ? bytes.length : offset+ 140
-                computeHashAndDisplaybytes(bytes, offset, end)
-                offset += 140
-
-                if(offset>bytes.length){
-                    break;
-                }
-            }
-          return;
+            displayBytes(bytes)
       });
+}
+
+function displayBytes(bytes){
+    offset = 0;
+    for (;;){
+        let end = offset+140 > bytes.length ? bytes.length : offset+ 140
+        computeHashAndDisplaybytes(bytes, offset, end)
+        offset += 140
+
+        if(offset>bytes.length){
+            break;
+        }
+    }
+  return;
 }
 
 function receiveDataHandler(socketId){
