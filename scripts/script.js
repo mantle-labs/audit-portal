@@ -10,7 +10,7 @@ $(document).on("click", ".list-group-item", function(e) {
     $("#nodeUrl").val(url)
 })
 
-$("#search").click(function(e){
+$("#validate").click(function(e){
     $("#tansactions-table tbody tr").fadeOut(500, function(){
         $("#tansactions-table tbody tr").remove()
     })
@@ -28,7 +28,7 @@ $("#search").click(function(e){
             return
         }
         
-        $.get(`${node}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
+        $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
             data[0].forEach((tx, i) => {
                 bytes = base58.decode(tx.attachment)
                 sha256(new Uint8Array(bytes)).then(h => {

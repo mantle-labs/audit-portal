@@ -41,7 +41,8 @@ function sendDataHandler(){
     chrome.sockets.tcp.onReceive.addListener(function(info) {
         if (info.socketId == SOCKET_ID){
             //we ne to slice first 4 bytes, its the data length
-            bytes = Array.from(new Uint8Array(info.data)).slice(4)
+            var enc = new TextDecoder("utf-8");
+            bytes = enc.decode(info.data.slice(4))
             SOCKET_ID = 0
 
             displayBytes(bytes)
@@ -54,16 +55,8 @@ function receiveDataHandler(socketId){
 }
 
 function displayBytes(bytes){
-    offset = 0;
-    for (;;){
-        let end = offset+140 > bytes.length ? bytes.length : offset+ 140
-        computeHashAndDisplaybytes(bytes, offset, end)
-        offset += 140
+        $("#bdtp-data").append(`<div id="a" class="col bdtp-block">${bytes}</div>`)
 
-        if(offset>bytes.length){
-            break;
-        }
-    }
   return;
 }
 
