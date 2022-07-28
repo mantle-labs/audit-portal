@@ -43,12 +43,14 @@ $("#validate").click(function(e){
                         <td>${string}</td>
                         <td>${tx.timestamp}</td>
                         <td>${new Date(tx.timestamp)}</td>
+                        <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin"></i></td>
                     </tr>`).fadeIn(1000)
                 
                  
             })
         }).fail(function(){alert("cannot make call")});
     }, 600)
+
 })
 
 $("#wavesMainnet").click(function(e){
@@ -59,9 +61,10 @@ $("#wavesTestnet").click(function(e){
     fillListGroup(wavesTestnet)
 })
 
-function showChainLogo(){
+async function showChainLogo(){
     $("#chain-logo").append(`<img src="img/waves-logo.svg" height="45px" class="col-12">`)
     $("#chain-logo").append(`<span>Waves Network</span>`)
+    return;
 }
 
 function showArrow(){
