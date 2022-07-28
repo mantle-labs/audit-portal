@@ -55,9 +55,9 @@ function receiveDataHandler(socketId){
 }
 
 function displayBytes(bytes){
-        $("#bdtp-data").append(`<div id="a" class="col bdtp-block">${bytes}</div>`)
-
-  return;
+    $("div#bdtp-data").empty()
+    $("#bdtp-data").append(`<div id="a" class="col bdtp-block">${bytes}</div>`)
+    return;
 }
 
 function computeHashAndDisplaybytes(bytes, start, end){
@@ -67,8 +67,6 @@ function computeHashAndDisplaybytes(bytes, start, end){
 }
 
 $("#bdtp").click(async function(e){
-    $("div#bdtp-data").empty()
-
     if (chrome.sockets == undefined){
         displayBytes(hc)
         return

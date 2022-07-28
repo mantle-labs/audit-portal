@@ -16,31 +16,34 @@ $("#validate").click(function(e){
     })
 
     setTimeout(function(){
-        var node = $("#nodeUrl").val()
         var pointer = parsePointer($("#pointer").val())
 
-        if (node == '' || pointer == ''){
-            alert("node url or pointer is not set.")
+        if (pointer == ''){
+            alert("pointer is not set.")
             return
         }
         if (pointer.chain != "WAV"){
             alert("chain not suported")
             return
         }
+        showChainLogo()
+        showArrow()
+        showAddress(pointer.add)
         
         $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
             data[0].forEach((tx, i) => {
-                bytes = base58.decode(tx.attachment)
-                sha256(new Uint8Array(bytes)).then(h => {
-                    $("tbody").append(`
-                    <tr id="tx-${h}">
+                bytes = (base58.decode(tx.attachment))
+                var string = ""
+                bytes.forEach(c => string+=String.fromCharCode(c))
+                
+                $("tbody").append(`
+                    <tr id="tx-${tx.id}">
                         <th scope="row">${i}</th>
                         <td>${tx.id}</td>
-                        <td>${h}</td>
+                        <td>${string}</td>
                         <td>${tx.timestamp}</td>
                         <td>${new Date(tx.timestamp)}</td>
                     </tr>`).fadeIn(1000)
-                })
                 
                  
             })
@@ -55,6 +58,19 @@ $("#wavesMainnet").click(function(e){
 $("#wavesTestnet").click(function(e){
     fillListGroup(wavesTestnet)
 })
+
+function showChainLogo(){
+    $("#chain-logo").append(`<img src="img/waves-logo.svg" height="45px" class="col-12">`)
+    $("#chain-logo").append(`<span>Waves Network</span>`)
+}
+
+function showArrow(){
+    $("#arrowDiv").append(`<div class="arrow" ><div class="head"></div></div>`)
+}
+function showAddress(add){
+    $("#chain-address").append(`<span class="align-middle"><b>Network Address: </b><br></span>`)
+   $("#chain-address").append(`<span class="align-middle">${add}</span>`)
+}
 
 function fillListGroup(links){
     $("#networkLinks").fadeOut(500, function(){
