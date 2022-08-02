@@ -56,13 +56,17 @@ function receiveDataHandler(socketId){
 
 function displayBytes(bytes){
     $("div#bdtp-data").empty()
-    $("#bdtp-data").append(`<div id="a" class="col bdtp-block">${bytes}</div>`)
+    var offset = 0;
+    for(var i=0; i<2; i++){
+        computeHashAndDisplaybytes(bytes, offset, offset+140)
+        offset+=140
+    }
     return;
 }
 
 function computeHashAndDisplaybytes(bytes, start, end){
-    sha256(new Uint8Array(bytes.slice(start, end))).then(h => {
-        $("#bdtp-data").append(`<div id="${h}" class="col bdtp-block">${bytes.slice(start, end)}</div>`)
+    sha256(bytes.slice(start, end)).then(h => {
+        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block">${bytes.slice(start, end)}</span>`)
      })
 }
 

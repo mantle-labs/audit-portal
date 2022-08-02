@@ -11,47 +11,57 @@ $(document).on("click", ".list-group-item", function(e) {
 })
 
 $("#validate").click(function(e){
-    $("#tansactions-table tbody tr").fadeOut(500, function(){
-        $("#tansactions-table tbody tr").remove()
-    })
+    $("tbody").empty()
+    var pointer = parsePointer($("#pointer").val())
 
-    setTimeout(function(){
-        var pointer = parsePointer($("#pointer").val())
-
-        if (pointer == ''){
-            alert("pointer is not set.")
-            return
-        }
-        if (pointer.chain != "WAV"){
-            alert("chain not suported")
-            return
-        }
-        showChainLogo()
-        showArrow()
-        showAddress(pointer.add)
-        
-        $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
-            data[0].forEach((tx, i) => {
-                bytes = (base58.decode(tx.attachment))
-                var string = ""
-                bytes.forEach(c => string+=String.fromCharCode(c))
-                
-                $("tbody").append(`
-                    <tr id="tx-${tx.id}">
-                        <th scope="row">${i}</th>
-                        <td>${tx.id}</td>
-                        <td>${string}</td>
-                        <td>${tx.timestamp}</td>
-                        <td>${new Date(tx.timestamp)}</td>
-                        <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin"></i></td>
-                    </tr>`).fadeIn(1000)
-                
-                 
-            })
-        }).fail(function(){alert("cannot make call")});
-    }, 600)
-
+    if (pointer == ''){
+        alert("pointer is not set.")
+        return
+    }
+    if (pointer.chain != "WAV"){
+        alert("chain not suported")
+        return
+    }
+    showChainLogo(pointer)
 })
+
+async function fetchFromWaves(pointer) {
+    var ids = [];
+    await $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
+        data[0].forEach((tx, i) => {
+            bytes = (base58.decode(tx.attachment))
+            var string = ""
+            bytes.forEach(c => string+=String.fromCharCode(c))
+            
+            $("tbody").append(`
+                <tr id="tx-${tx.id}">
+                    <th scope="row">${i}</th>
+                    <td>${tx.id}</td>
+                    <td id="attachement-${tx.id}">${string}</td>
+                    <td>${tx.timestamp}</td>
+                    <td>${new Date(tx.timestamp)}</td>
+                    <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin"></i></td>
+                </tr>`).fadeIn(1000)
+                ids.push(tx.id)
+        })
+    }).fail(function(){alert("cannot make call")});
+    validateTxs(ids, 0)
+}
+
+function validateTxs(ids, i) {
+    confirmTxContent($(`#attachement-${ids[i]}`).text(), ids[i])
+    if(ids.length >= i){
+        setTimeout(() => validateTxs(ids, i+1), 1000)
+    }
+}
+
+async function confirmTxContent(attachement, id){
+    var h = await sha256(attachement)
+    $(`#${h}`).addClass('green')
+    console.log($(`#${h}`))
+    setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
+    $(`#i-${id}`).removeClass().addClass("fa fa-check")
+}
 
 $("#wavesMainnet").click(function(e){
     fillListGroup(wavesMainnet)
@@ -61,18 +71,22 @@ $("#wavesTestnet").click(function(e){
     fillListGroup(wavesTestnet)
 })
 
-async function showChainLogo(){
-    $("#chain-logo").append(`<img src="img/waves-logo.svg" height="45px" class="col-12">`)
-    $("#chain-logo").append(`<span>Waves Network</span>`)
-    return;
+function showChainLogo(pointer){
+    $("#chain-logo-div").fadeOut(1000, ()=> {
+        $("#chain-logo-div").empty()
+        $("#chain-logo-div").append(`<img src="img/waves-logo.svg" height="45px" class="col-12"><span>Waves Network</span>`)
+        $("#chain-logo-div").fadeIn(1000, ()=> showArrow(pointer))
+    })
 }
 
-function showArrow(){
+function showArrow(pointer){
+    $("#arrowDiv").empty()
     $("#arrowDiv").append(`<div class="arrow" ><div class="head"></div></div>`)
+    setTimeout(()=> showAddress(pointer), 3000)
 }
-function showAddress(add){
-    $("#chain-address").append(`<span class="align-middle"><b>Network Address: </b><br></span>`)
-   $("#chain-address").append(`<span class="align-middle">${add}</span>`)
+function showAddress(pointer){
+   $("#chain-address").text(pointer.add)
+   $("#chain-address").fadeIn(500, ()=> fetchFromWaves(pointer))
 }
 
 function fillListGroup(links){
@@ -109,14 +123,10 @@ $(document).on("mouseleave", "tr", function(e){
     }
 })
 
-async function sha256(msgBuffer) {
-    // hash the message
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-
-    // convert ArrayBuffer to Array
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-    // convert bytes to hex string                  
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+async function sha256(message) {
+    const msgUint8 = new TextEncoder().encode(message);                          
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);           
+    const hashArray = Array.from(new Uint8Array(hashBuffer));                     
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join(''); 
     return hashHex;
 }

@@ -22,10 +22,6 @@ table td {
 html, body {
     overflow-y: visible;
 }
-#arrow-img{
-    height: 45px;
-    width: 100px;
-}
 .arrow{
     margin-top:1em;
     border:2px solid #000000;

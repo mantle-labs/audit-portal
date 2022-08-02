@@ -20,31 +20,32 @@
             <div class="row row-cols-1">
                 <div class="col text-center">
                     <label>Pointer: </label>
-                    <input id="pointer" type="text" value="WAV3N5ufNdUAgG8VaHu3Rv3qF9iWTGjfx3vrHo">
+                    <input id="pointer" type="text" value="WAV3N9JvrqQhgDAgnP3zfjy4oYbQvUegypiDqY">
                     <button id="bdtp" class="btn btn-dark" type="button">Fetch</button>
                 </div>
             </div>
             <div class="card mb-5">
-                <div class="row card-header text-center">
+                <div class="card-header text-center">
                     <h2>Bdtp server</h2>
                 </div>
-                <div id="bdtp-data" class="row mb-5 text-center">
+                <div id="bdtp-data" class="mb-5 text-center">
                     <span class="justify-content-center align-items-center"><b>Waiting for bdtp data...</b></span>
                 </div>
             </div>
             <div class="card">
-                <div class="row card-header text-center">
+                <div class="card-header text-center">
                     <h2>Transactions</h2>
                 </div>
                 <div class="card-body row text-center">
-                    <div id="chain-logo" class="col">
-
+                    <div id="chain-logo-div" class="col">
+                        <i id="chain-logo" class="fa fa-globe fa-6" style="font-size: 3rem;" aria-hidden="true"></i>
                     </div>
                     <div id="arrowDiv" class="col">
-
-                    </div>
-                    <div id="chain-address" class="col">
                         
+                    </div>
+                    <div class="col">
+                        <span class="align-middle"><b>Network Address: </b><br></span>
+                        <span class="align-middle" id="chain-address" style="display: none;"></span>
                     </div>
                 </div> 
                 <div class="row card-body">
