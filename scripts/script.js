@@ -11,19 +11,18 @@ $(document).on("click", ".list-group-item", function(e) {
 })
 
 $("#validate").click(function(e){
+    disableValidate()
+    showTransactionDiv()
+    $("#chain-address").fadeOut(500)
     $("tbody").empty()
+    $("#arrowDiv").empty()
     var pointer = parsePointer($("#pointer").val())
-
-    if (pointer == ''){
-        alert("pointer is not set.")
-        return
-    }
-    if (pointer.chain != "WAV"){
-        alert("chain not suported")
-        return
-    }
     showChainLogo(pointer)
 })
+
+function showTransactionDiv(){
+    $("#transactionDiv").fadeIn(500)
+}
 
 async function fetchFromWaves(pointer) {
     var ids = [];
@@ -32,49 +31,72 @@ async function fetchFromWaves(pointer) {
             bytes = (base58.decode(tx.attachment))
             var string = ""
             bytes.forEach(c => string+=String.fromCharCode(c))
-            
             $("tbody").append(`
-                <tr id="tx-${tx.id}">
+                <tr id="tx-${tx.id}" style="display: none">
                     <th scope="row">${i}</th>
-                    <td>${tx.id}</td>
+                    <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
                     <td id="attachement-${tx.id}">${string}</td>
                     <td>${tx.timestamp}</td>
                     <td>${new Date(tx.timestamp)}</td>
                     <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin"></i></td>
-                </tr>`).fadeIn(1000)
-                ids.push(tx.id)
+                </tr>
+            `)
+            $(`#tx-${tx.id}`).fadeIn(500)
+            ids.push(tx.id)
         })
     }).fail(function(){alert("cannot make call")});
-    validateTxs(ids, 0)
+    validateTxs(ids, 0, 0)
 }
 
-function validateTxs(ids, i) {
-    confirmTxContent($(`#attachement-${ids[i]}`).text(), ids[i])
-    if(ids.length >= i){
-        setTimeout(() => validateTxs(ids, i+1), 1000)
+async function validateTxs(ids, i, validated) {
+    var isValid = await confirmTxContent($(`#attachement-${ids[i]}`).text(), ids[i])
+    if(i+1 < ids.length ){
+        validated = isValid? validated+1: validated
+        setTimeout(() => validateTxs(ids, i+1, validated), 1000)
+    }else{
+        validated = isValid? validated+1: validated
+        showValidationStatus(isValid)
     }
+}
+
+function disableValidate(){
+    $("#validate").attr("disabled", true)
+    $("#validate").empty()
+    $("#validate").append(`Validating... <i class="fa fa-circle-notch fa-spin"></i>`)
+}
+
+function resetValidate(){
+    $("#validate").attr("disabled", true)
+    $("#validate").empty()
+    $("#validate").append(`Validate Data`)
+}
+
+function showValidationStatus(){
+    var icon = valid? "fa fa-check": "fa fa-times"
+    var message = valid? "Valid  ": "Invalid  "
+    $("#validate").empty()
+    $("#validate").append(`${message} <i class="${icon}"></i>`)
 }
 
 async function confirmTxContent(attachement, id){
     var h = await sha256(attachement)
-    $(`#${h}`).addClass('green')
-    console.log($(`#${h}`))
-    setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
-    $(`#i-${id}`).removeClass().addClass("fa fa-check")
+    var el = $(`#${h}`)
+    if(el.length === 1){
+        $(`#${h}`).addClass('green')
+        setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
+        $(`#i-${id}`).removeClass().addClass("fa fa-check green-text")
+        return true;
+    }
+    else{
+        $(`#i-${id}`).removeClass().addClass("fa fa-times red-text")
+        return false;
+    }
 }
 
-$("#wavesMainnet").click(function(e){
-    fillListGroup(wavesMainnet)
-})
-
-$("#wavesTestnet").click(function(e){
-    fillListGroup(wavesTestnet)
-})
-
 function showChainLogo(pointer){
-    $("#chain-logo-div").fadeOut(1000, ()=> {
+    $("#chain-logo-div").fadeOut(500, ()=> {
         $("#chain-logo-div").empty()
-        $("#chain-logo-div").append(`<img src="img/waves-logo.svg" height="45px" class="col-12"><span>Waves Network</span>`)
+        $("#chain-logo-div").append(`<a href="https://testnet.wavesexplorer.com/" target="_blank"><img src="img/waves-logo.svg" height="45px" class="col-12"><span>Waves Network</span></a>`)
         $("#chain-logo-div").fadeIn(1000, ()=> showArrow(pointer))
     })
 }
@@ -85,41 +107,28 @@ function showArrow(pointer){
     setTimeout(()=> showAddress(pointer), 3000)
 }
 function showAddress(pointer){
-   $("#chain-address").text(pointer.add)
-   $("#chain-address").fadeIn(500, ()=> fetchFromWaves(pointer))
+    $("#chain-address").empty()
+    $("#chain-address").append(`<a href="https://testnet.wavesexplorer.com/address/${pointer.add}/tx" target="_blank">${pointer.add}</a>`)
+    $("#chain-address").fadeIn(500, ()=> fetchFromWaves(pointer))
 }
 
-function fillListGroup(links){
-    $("#networkLinks").fadeOut(500, function(){
-       $("#networkLinks").empty()
 
-       var isFirst = true
-       $("#nodeUrl").val(links[0])
-       for (let i = 0; i < links.length; i++){
-           var active = isFirst ? "active" : ""
-           $("#networkLinks").append(`<li class="list-group-item ${active}">${links[i]}</li>`).fadeIn(500)
-           isFirst = false
-       }
-    })
-}
-
-$(document).on("mouseenter", "tr", function(e){
-    h = this.id.substring(3, this.id.length)
+$(document).on("mouseenter", "tr", async function(e){
+    id = this.id.substring(3, this.id.length)
+    h = await sha256($(`#attachement-${id}`).text())
     bdtpBlock = $(`#${h}`)
-
     if(bdtpBlock.length){
         bdtpBlock.addClass("green")
-        $(`#${this.id}`).addClass("green")
     }
 })
 
-$(document).on("mouseleave", "tr", function(e){
-    h = this.id.substring(3, this.id.length)
+$(document).on("mouseleave", "tr", async function(e){
+    id = this.id.substring(3, this.id.length)
+    h = await sha256($(`#attachement-${id}`).text())
     bdtpBlock= $(`#${h}`)
 
     if(bdtpBlock.length){
         bdtpBlock.removeClass("green")
-        $(`#${this.id}`).removeClass("green")
     }
 })
 

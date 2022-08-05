@@ -9,38 +9,39 @@
       integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
         <link rel="stylesheet" href="styles.css">
     </head>
-    <body class="vh100">
+    <body class="d-flex flex-column min-vh-100 mt-3">
         <div class="container">
             <div class="row row-cols-1">
-                <div class="col text-center">
-                    <h1>Welcome to mantle audit portal !</h1>
+                <div class="col text-center mb-3">
+                    <h1>Welcome to Mantle Audit Portal!</h1>
                 </div>
             </div>
 
-            <div class="row row-cols-1">
-                <div class="col text-center">
-                    <label>Pointer: </label>
-                    <input id="pointer" type="text" value="WAV3N9JvrqQhgDAgnP3zfjy4oYbQvUegypiDqY">
-                    <button id="bdtp" class="btn btn-dark" type="button">Fetch</button>
+            <div class="input-group mb-5">
+                <input type="text" class="form-control" placeholder="Enter pointer here" id="pointer">
+                <div class="input-group-append">
+                    <button class="input-group-text btn btn-dark" id="bdtp" style="width: 15vw;">Fetch</button>
                 </div>
             </div>
             <div class="card mb-5">
                 <div class="card-header text-center">
-                    <h2>Bdtp server</h2>
+                    <h2>Blockchain Data Transfer Protocol server</h2>
                 </div>
                 <div id="bdtp-data" class="mb-5 text-center">
-                    <span class="justify-content-center align-items-center"><b>Waiting for bdtp data...</b></span>
+                    <span class="justify-content-center align-items-center"><b id="bdtp-message">Waiting for bdtp data...</b></span>
                 </div>
             </div>
-            <div class="card">
+            <div class="row mb-2 justify-content-center p-0">
+                <button id="validate" class="col-4 btn btn-dark" disabled>Validate Data</button>
+            </div>
+            <div class="card mb-2 mt-5" id="transactionDiv" style="display: none">
                 <div class="card-header text-center">
                     <h2>Transactions</h2>
                 </div>
                 <div class="card-body row text-center">
                     <div id="chain-logo-div" class="col">
-                        <i id="chain-logo" class="fa fa-globe fa-6" style="font-size: 3rem;" aria-hidden="true"></i>
                     </div>
-                    <div id="arrowDiv" class="col">
+                    <div id="arrowDiv" class="col mt-3">
                         
                     </div>
                     <div class="col">
@@ -65,8 +66,16 @@
                     </table>
                 </div>
             </div>
-            <button id="validate" class="col-2 btn btn-dark">Validate</button>
         </div>
+        <!-- Footer -->
+        <footer class="text-center text-lg-start bg-white text-muted mt-auto">  
+            <div class="text-center p-4">
+                © Mantle Technology 
+                <a class="text-reset fw-bold" href="https://github.com/mantle-labs/audit-portal" target="_blank">Audit Portal</a>
+            </div>
+            <!-- Copyright -->
+        </footer>
+        <!-- Footer -->
 
         <script src="scripts/lib/jquery-1.9.1.min.js"></script>
         <script src="scripts/lib/bootstrap.bundle.min.js"></script>
