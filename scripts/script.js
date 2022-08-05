@@ -71,9 +71,9 @@ function resetValidate(){
     $("#validate").append(`Validate Data`)
 }
 
-function showValidationStatus(){
-    var icon = valid? "fa fa-check": "fa fa-times"
-    var message = valid? "Valid  ": "Invalid  "
+function showValidationStatus(isValid){
+    var icon = isValid? "fa fa-check": "fa fa-times"
+    var message = isValid? "Valid  ": "Invalid  "
     $("#validate").empty()
     $("#validate").append(`${message} <i class="${icon}"></i>`)
 }
