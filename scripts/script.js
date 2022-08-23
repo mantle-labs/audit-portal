@@ -33,7 +33,7 @@ async function fetchFromWaves(pointer) {
             bytes.forEach(c => string+=String.fromCharCode(c))
             $("tbody").append(`
                 <tr id="tx-${tx.id}" style="display: none">
-                    <th scope="row">${i}</th>
+                    <th scope="row">${i+1}</th>
                     <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
                     <td id="attachement-${tx.id}">${string}</td>
                     <td>${new Date(tx.timestamp)}</td>
