@@ -25,7 +25,7 @@ function showTransactionDiv(){
 }
 
 async function fetchFromWaves(pointer) {
-    var ids = [];
+    var ids = []
     await $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
         data[0].forEach((tx, i) => {
             bytes = (base58.decode(tx.attachment))
@@ -36,7 +36,6 @@ async function fetchFromWaves(pointer) {
                     <th scope="row">${i}</th>
                     <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
                     <td id="attachement-${tx.id}">${string}</td>
-                    <td>${tx.timestamp}</td>
                     <td>${new Date(tx.timestamp)}</td>
                     <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin"></i></td>
                 </tr>
@@ -55,7 +54,7 @@ async function validateTxs(ids, i, validated) {
         setTimeout(() => validateTxs(ids, i+1, validated), 1000)
     }else{
         validated = isValid? validated+1: validated
-        showValidationStatus(isValid)
+        showValidationStatus(validated === ids.length)
     }
 }
 
@@ -80,7 +79,8 @@ function showValidationStatus(isValid){
 
 async function confirmTxContent(attachement, id){
     var h = await sha256(attachement)
-    var el = $(`#${h}`)
+    var el = $(`#i-${id}`)
+
     if(el.length === 1){
         $(`#${h}`).addClass('green')
         setTimeout(()=> $(`#${h}`).removeClass("green"), 500)

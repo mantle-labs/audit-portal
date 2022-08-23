@@ -54,8 +54,7 @@ function sendDataHandler(){
     chrome.sockets.tcp.onReceive.addListener(function(info) {
         if (info.socketId == SOCKET_ID){
             //we ne to slice first 4 bytes, its the data length
-            var enc = new TextDecoder("utf-8");
-            bytes = enc.decode(info.data.slice(4))
+            bytes = Array.from(new Uint8Array(info.data)).slice(4)
             SOCKET_ID = 0
             displayBytes(bytes)
         }   
@@ -97,7 +96,10 @@ function enableFetchBtn(){
 
 function computeHashAndDisplaybytes(bytes, start, end){
     sha256(bytes.slice(start, end)).then(h => {
-        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block">${bytes.slice(start, end)}</span>`)
+        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block"></span>`)
+        var string = ""
+        bytes.slice(start, end).forEach(c => string+=String.fromCharCode(c))
+        $(`#${h}`).text(string)
      })
 }
 

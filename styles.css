@@ -16,6 +16,12 @@ table {
     table-layout:fixed;
 }
 
+.scrollable{
+  min-height: 100px;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
 table td {
     overflow:hidden;
     text-overflow: ellipsis;
