@@ -22,6 +22,17 @@ table {
   max-height: 300px;
 }
 
+#myProgress {
+  width: 100%;
+  background-color: rgb(209, 208, 208);
+}
+
+#myBar {
+  width: 50%;
+  height: 30px;
+  background-color: green;
+}
+
 table td {
     overflow:hidden;
     text-overflow: ellipsis;

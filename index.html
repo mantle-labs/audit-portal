@@ -20,7 +20,7 @@
             <div class="input-group mb-5">
                 <input type="text" class="form-control" placeholder="Enter pointer here" id="pointer">
                 <div class="input-group-append">
-                    <button class="input-group-text btn btn-dark" id="bdtp" style="width: 15vw;">Fetch</button>
+                    <button class="input-group-text btn btn-dark" id="bdtp" style="width: 15vw;border-radius: 0rem 0.375rem 0.375rem 0rem;">Fetch</button>
                 </div>
             </div>
             <div class="card mb-5">
@@ -48,7 +48,14 @@
                         <span class="align-middle"><b>Network Address: </b><br></span>
                         <span class="align-middle" id="chain-address" style="display: none;"></span>
                     </div>
-                </div> 
+                </div>
+                <div class="card-body row">
+                    <div class="col">
+                        <div id="myProgress">
+                            <div id="myBar"><p id="confirmedTxCount">10000</p><p id="totalTxCount">100</p></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row card-body">
                     <table id="tansactions-table col-5" class="table">
                         <thead>

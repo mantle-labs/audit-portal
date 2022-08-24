@@ -1,15 +1,6 @@
 var wavesTestnet = ['https://nodes-testnet.wavesnodes.com', 'https://testnode2.wavesnodes.com', 'https://testnode3.wavesnodes.com', 'https://testnode4.wavesnodes.com']
 var wavesMainnet = ['https://nodes.wavesexplorer.com']
 
-$(document).on("click", ".list-group-item", function(e) {
-    $("li").removeClass("active")
-    $(e.target).addClass("active")
-
-    var url = $(e.target).text()
-
-    $("#nodeUrl").val(url)
-})
-
 $("#validate").click(function(e){
     disableValidate()
     showTransactionDiv()
@@ -37,7 +28,7 @@ async function fetchFromWaves(pointer) {
                     <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
                     <td id="attachement-${tx.id}">${string}</td>
                     <td>${new Date(tx.timestamp)}</td>
-                    <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin"></i></td>
+                    <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin fa-2x"></i></td>
                 </tr>
             `)
             $(`#tx-${tx.id}`).fadeIn(500)
@@ -84,11 +75,11 @@ async function confirmTxContent(attachement, id){
     if(el.length === 1){
         $(`#${h}`).addClass('green')
         setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
-        $(`#i-${id}`).removeClass().addClass("fa fa-check green-text")
+        $(`#i-${id}`).removeClass().addClass("fa fa-check fa-2x green-text")
         return true;
     }
     else{
-        $(`#i-${id}`).removeClass().addClass("fa fa-times red-text")
+        $(`#i-${id}`).removeClass().addClass("fa fa-times fa-2x red-text")
         return false;
     }
 }
