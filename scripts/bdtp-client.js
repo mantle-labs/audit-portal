@@ -9,11 +9,11 @@ function parsePointer(pointer){
 }
 
 function stringToBytes(str){
-    var bytes = []; 
+    var bytes = []
 
     for (var i = 0; i < str.length; ++i) {
-        var code = str.charCodeAt(i);
-        bytes = bytes.concat([code]);
+        var code = str.charCodeAt(i)
+        bytes = bytes.concat([code])
     }
 
     return bytes
@@ -58,7 +58,7 @@ function sendDataHandler(){
             SOCKET_ID = 0
             displayBytes(bytes)
         }   
-      });
+      })
 }
 
 function receiveDataHandler(socketId){
@@ -68,18 +68,18 @@ function receiveDataHandler(socketId){
 function displayBytes(bytes){
     disableFetchBtn()
     $("#bdtp-data").empty()
-    offset = 0;
+    offset = 0
     for (;;){
         let end = offset+140 > bytes.length ? bytes.length : offset+ 140
         computeHashAndDisplaybytes(bytes, offset, end)
         offset += 140
 
         if(offset>bytes.length){
-            break;
+            break
         }
     }
     enableValidateBtn()
-    return;
+    return
 }
 
 function enableValidateBtn(){
@@ -122,8 +122,8 @@ $("#bdtp").click(async function(e){
     chrome.sockets.tcp.create({}, function(createInfo) {
         SOCKET_ID = createInfo.socketId
         chrome.sockets.tcp.connect(SOCKET_ID,
-          "localhost", 4444, sendDataHandler);
-      });
+          "localhost", 4444, sendDataHandler)
+      })
 })
 
 function resetUI(){

@@ -34,11 +34,12 @@ async function fetchFromWaves(pointer) {
             $(`#tx-${tx.id}`).fadeIn(500)
             ids.push(tx.id)
         })
-    }).fail(function(){alert("cannot make call")});
+    }).fail(function(){alert("cannot make call")})
     validateTxs(ids, 0, 0)
 }
 
 async function validateTxs(ids, i, validated) {
+    txProgressBarUpdater(ids.length, i+1)
     var isValid = await confirmTxContent($(`#attachement-${ids[i]}`).text(), ids[i])
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
@@ -76,11 +77,11 @@ async function confirmTxContent(attachement, id){
         $(`#${h}`).addClass('green')
         setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
         $(`#i-${id}`).removeClass().addClass("fa fa-check fa-2x green-text")
-        return true;
+        return true
     }
     else{
         $(`#i-${id}`).removeClass().addClass("fa fa-times fa-2x red-text")
-        return false;
+        return false
     }
 }
 
@@ -124,9 +125,16 @@ $(document).on("mouseleave", "tr", async function(e){
 })
 
 async function sha256(message) {
-    const msgUint8 = new TextEncoder().encode(message);                          
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);           
-    const hashArray = Array.from(new Uint8Array(hashBuffer));                     
-    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join(''); 
-    return hashHex;
+    const msgUint8 = new TextEncoder().encode(message)                        
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))          
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('') 
+    return hashHex
+}
+
+function txProgressBarUpdater(length, i) {
+    var el = $("#progress-bar")
+    var width = i/length*100
+    el.css({'width': `${width}%`})
+    el.text(`${i}/${length} Transactions processed`)
 }
