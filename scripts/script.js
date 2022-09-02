@@ -17,33 +17,40 @@ function showTransactionDiv(){
 
 async function fetchFromWaves(pointer) {
     var ids = []
+    var bytesArray = []
     await $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
-        data[0].forEach((tx, i) => {
+        data[0].forEach(async (tx, i) => {
+            ids.push(tx.id)
             bytes = (base58.decode(tx.attachment))
+            bytesArray.push(bytes)
             var string = ""
             bytes.forEach(c => string+=String.fromCharCode(c))
             $("tbody").append(`
                 <tr id="tx-${tx.id}" style="display: none">
-                    <th scope="row">${i+1}</th>
+                    <th scope="row">${i}</th>
                     <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
-                    <td id="attachement-${tx.id}">${string}</td>
+                    <td id="attachement-${tx.id}"></td>
                     <td>${new Date(tx.timestamp)}</td>
                     <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin fa-2x"></i></td>
                 </tr>
             `)
             $(`#tx-${tx.id}`).fadeIn(500)
-            ids.push(tx.id)
+            $(`#attachement-${tx.id}`).text(string)
         })
     }).fail(function(){alert("cannot make call")})
-    validateTxs(ids, 0, 0)
+    validateTxs(ids, bytesArray, 0, 0)
 }
 
-async function validateTxs(ids, i, validated) {
+async function validateTxs(ids, bytesArray, i, validated) {
+    if($("#chain-address").text()===""){
+        console.log("here")
+        return
+    }
     txProgressBarUpdater(ids.length, i+1)
-    var isValid = await confirmTxContent($(`#attachement-${ids[i]}`).text(), ids[i])
+    var isValid = await confirmTxContent(bytesArray[i], ids[i])
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
-        setTimeout(() => validateTxs(ids, i+1, validated), 1000)
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 1000)
     }else{
         validated = isValid? validated+1: validated
         showValidationStatus(validated === ids.length)
@@ -64,23 +71,25 @@ function resetValidate(){
 
 function showValidationStatus(isValid){
     var icon = isValid? "fa fa-check": "fa fa-times"
-    var message = isValid? "Valid  ": "Invalid  "
+    var message = isValid? "Valid": "Invalid"
     $("#validate").empty()
-    $("#validate").append(`${message} <i class="${icon}"></i>`)
+    $("#validate").append(`${message}<i class="${icon}"></i>`)
 }
 
 async function confirmTxContent(attachement, id){
     var h = await sha256(attachement)
-    var el = $(`#i-${id}`)
+    var txEl = $(`#i-${id}`)
+    var hEl = $(`#${h}`)
 
-    if(el.length === 1){
+    if(hEl.length === 1){
         $(`#${h}`).addClass('green')
         setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
-        $(`#i-${id}`).removeClass().addClass("fa fa-check fa-2x green-text")
+        txEl.removeClass().addClass("fa fa-check fa-2x green-text")
         return true
     }
     else{
-        $(`#i-${id}`).removeClass().addClass("fa fa-times fa-2x red-text")
+        console.log(h)
+        txEl.removeClass().addClass("fa fa-times fa-2x red-text")
         return false
     }
 }
@@ -107,7 +116,7 @@ function showAddress(pointer){
 
 $(document).on("mouseenter", "tr", async function(e){
     id = this.id.substring(3, this.id.length)
-    h = await sha256($(`#attachement-${id}`).text())
+    h = await sha256($(`#attachement-${this.id}`).text())
     bdtpBlock = $(`#${h}`)
     if(bdtpBlock.length){
         bdtpBlock.addClass("green")
@@ -135,6 +144,6 @@ async function sha256(message) {
 function txProgressBarUpdater(length, i) {
     var el = $("#progress-bar")
     var width = i/length*100
-    el.css({'width': `${width}%`})
-    el.text(`${i}/${length} Transactions processed`)
+    el.animate({width: `${width}%`}, 1000)
+    $("#transaction-counter").text(`${i}/${length} Transactions processed`)
 }

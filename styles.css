@@ -24,7 +24,6 @@ table {
 
 #progress {
   width: 100%;
-  background-color: rgb(209, 208, 208);
   word-wrap: normal !important;
 }
 
@@ -35,6 +34,10 @@ table {
   text-align: center;
   line-height: 30px;
   color: white;
+  border-radius: 0.375rem;
+}
+#transaction-counter{
+  height: 32px;
 }
 
 table td {

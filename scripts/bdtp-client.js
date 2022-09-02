@@ -94,10 +94,10 @@ function enableFetchBtn(){
     $("#bdtp").attr("disabled", false)
 }
 
-function computeHashAndDisplaybytes(bytes, start, end){
+async function computeHashAndDisplaybytes(bytes, start, end){
     sha256(bytes.slice(start, end)).then(h => {
         $("#bdtp-data").append(`<span id="${h}" class="bdtp-block"></span>`)
-        var string = ""
+        var string = "";
         bytes.slice(start, end).forEach(c => string+=String.fromCharCode(c))
         $(`#${h}`).text(string)
      })
@@ -133,6 +133,10 @@ function resetUI(){
     $("#chain-logo-div").empty()
     $("#arrowDiv").empty()
     $("#chain-address").empty()
+    $("#progress-bar").empty()
+    $("#progress-bar").css({'width': "0"})
+    $("#progress-bar").stop()
+    $("#transaction-counter").text(`${0}/${0} Transactions processed`)
 
     resetValidate()
 }
