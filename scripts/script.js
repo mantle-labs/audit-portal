@@ -18,11 +18,13 @@ function showTransactionDiv(){
 async function fetchFromWaves(pointer) {
     var ids = []
     var bytesArray = []
+    var length = 0
     await $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
         data[0].forEach(async (tx, i) => {
             ids.push(tx.id)
-            bytes = (base58.decode(tx.attachment))
+            bytes = base58.decode(tx.attachment)
             bytesArray.push(bytes)
+            length+=bytes.length
             var string = ""
             bytes.forEach(c => string+=String.fromCharCode(c))
             $("tbody").append(`
@@ -134,8 +136,8 @@ $(document).on("mouseleave", "tr", async function(e){
 })
 
 async function sha256(message) {
-    const msgUint8 = new TextEncoder().encode(message)                        
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+
+    const hashBuffer = await crypto.subtle.digest('SHA-256', new Uint8Array(message))
     const hashArray = Array.from(new Uint8Array(hashBuffer))          
     const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('') 
     return hashHex

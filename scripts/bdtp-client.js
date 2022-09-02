@@ -1,4 +1,7 @@
 var SOCKET_ID = 0
+var remainingBytes = []
+var dataSize = -1
+var readSize = 0
 
 function parsePointer(pointer){
     if(pointer == ""){
@@ -24,6 +27,9 @@ function bdtpError(message){
 }
 
 function sendDataHandler(){
+    remainingBytes = []
+    dataSize = -1
+    readSize = 0
     console.log("Connected ! sending pointer")  
     pointer = parsePointer($("#pointer").val())
     if(pointer == null){
@@ -53,10 +59,13 @@ function sendDataHandler(){
 
     chrome.sockets.tcp.onReceive.addListener(function(info) {
         if (info.socketId == SOCKET_ID){
-            //we ne to slice first 4 bytes, its the data length
-            bytes = Array.from(new Uint8Array(info.data)).slice(4)
-            SOCKET_ID = 0
-            displayBytes(bytes)
+            data = Array.from(new Uint8Array(info.data))
+            if(dataSize === -1){
+                dataSize = parseInt(data.slice(0,4))
+                data = data.slice(4)
+            }
+            displayBytes(data, index)
+            index++
         }   
       })
 }
@@ -65,21 +74,45 @@ function receiveDataHandler(socketId){
     console.log("ready to receive data")
 }
 
-function displayBytes(bytes){
+function displayBytes(chunk){
     disableFetchBtn()
     $("#bdtp-data").empty()
     offset = 0
-    for (;;){
-        let end = offset+140 > bytes.length ? bytes.length : offset+ 140
-        computeHashAndDisplaybytes(bytes, offset, end)
-        offset += 140
+    chunk = remainingBytes.concat(chunk)
 
-        if(offset>bytes.length){
+    var i = 0
+    for (;;){
+        if(offset +140 > chunk.length){
+            if(readSize +offset+140 >= dataSize){
+                end = chunk.length
+            }
+            else{
+                remainingBytes = chunk.slice(offset)
+                
+                break
+            }
+        }else{
+            end = offset +140
+        }
+
+        computeHashAndDisplaybytes(chunk, offset, end)
+        if(offset>chunk.length){
+            offset += chunk.slice(offset).length - 1
             break
         }
+        offset += 140
     }
+    readSize += offset
     enableValidateBtn()
     return
+}
+
+function parseInt(array) {
+    var value = 0;
+    for (var i = 0; i < array.length; i++) {
+        value = (value * 256) + array[i];
+    }
+    return value;
 }
 
 function enableValidateBtn(){
