@@ -1,16 +1,3 @@
-var SOCKET_ID = 0
-var remainingBytes = []
-var dataSize = -1
-var readSize = 0
-
-function parsePointer(pointer){
-    if(pointer == ""){
-        return null
-    }
-    pointer = {chain: pointer.substring(0,3), add: pointer.substring(3)}
-    return pointer
-}
-
 function stringToBytes(str){
     var bytes = []
 
@@ -26,83 +13,72 @@ function bdtpError(message){
     $("#bdtp-message").text(message)
 }
 
-function sendDataHandler(){
-    remainingBytes = []
-    dataSize = -1
-    readSize = 0
-    console.log("Connected ! sending pointer")  
-    pointer = parsePointer($("#pointer").val())
-    if(pointer == null){
-        bdtpError("Please enter a pointer")
-        return
-    }
-    else if(pointer.chain != "WAV"){
-        bdtpError("Chain not supported")
-    }
-    pointer.add = base58.decode(pointer.add)
 
-    buff = new ArrayBuffer(pointer.chain.length + pointer.add.length +4)
-    buffArr = new Uint8Array(buff)
-    for  (i = 0; i< buffArr.length; i++){
-        if (i<3){
-            buffArr[i] = pointer.chain.charCodeAt(i)
-        }
-        if(i>=3 && i < 29){
-          buffArr[i] = pointer.add[i-3]
-        }
-        if (i>= 29){
-          buffArr[i] =0
-        }
-    }
+/******Process bdtp chunk because google sockets uses 4096bytes chunks  */
+var remainingBytes = []
+var dataSize = -1
+var readCount = 0
 
-    chrome.sockets.tcp.send(SOCKET_ID, buffArr, receiveDataHandler)
+function computeHashAndDisplaybytes(bytes){
 
-    chrome.sockets.tcp.onReceive.addListener(function(info) {
-        if (info.socketId == SOCKET_ID){
-            data = Array.from(new Uint8Array(info.data))
-            if(dataSize === -1){
-                dataSize = parseInt(data.slice(0,4))
-                data = data.slice(4)
-            }
-            displayBytes(data, index)
-            index++
-        }   
-      })
+    h = base58.sha256(bytes).then(h => {
+        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block">${bytes}</span>`)
+        var string = "";
+        bytes.forEach(c => string+=String.fromCharCode(c))
+        $(`#${h}`).text(string)
+    })
 }
 
-function receiveDataHandler(socketId){
-    console.log("ready to receive data")
-}
+async function processChunk(chunk){
+    console.log("proccessing chunks ")
+    console.log(remainingBytes == undefined)
+    console.log(chunk)
 
-function displayBytes(chunk){
-    disableFetchBtn()
-    $("#bdtp-data").empty()
-    offset = 0
-    chunk = remainingBytes.concat(chunk)
+    var currentChunk = remainingBytes == undefined ? chunk :remainingBytes.concat(Array.from(chunk))
+    console.log(currentChunk)
 
-    var i = 0
-    for (;;){
-        if(offset +140 > chunk.length){
-            if(readSize +offset+140 >= dataSize){
-                end = chunk.length
+    var offset = 0
+    console.log("for loop")
+    for (var i = 0; i<30;i++){
+
+        if(offset>currentChunk.length){
+            break
+        }
+
+        if(currentChunk.length < offset + 140){
+            console.log("**********************************")
+            console.log(readCount + 140 < dataSize)
+            console.log(readCount)
+            console.log(dataSize)
+            if (readCount + 140 < dataSize){
+                console.log("R")
+                return currentChunk.slice(offset, currentChunk.length)
             }
-            else{
-                remainingBytes = chunk.slice(offset)
-                
-                break
-            }
+            console.log(":)" + i)
+            end = currentChunk.length
+            
         }else{
             end = offset +140
         }
 
-        computeHashAndDisplaybytes(chunk, offset, end)
-        if(offset>chunk.length){
-            offset += chunk.slice(offset).length - 1
-            break
-        }
+        console.log("computing hash "+offset +"   "+end)
+        var bytes = currentChunk.slice(offset, end)
+        computeHashAndDisplaybytes(bytes)
+
         offset += 140
+        readCount +=140
     }
-    readSize += offset
+   return []
+}
+function fetchAndDisplayBytes(data){
+    disableFetchBtn()
+    $("#bdtp-data").empty()
+
+    //call bdtp
+    processChunk(data).then(remaining => {
+        remainingBytes = Array.from(remaining)
+    })
+
     enableValidateBtn()
     return
 }
@@ -126,38 +102,9 @@ function disableFetchBtn(){
 function enableFetchBtn(){
     $("#bdtp").attr("disabled", false)
 }
+function bytesToString(bytes){
 
-async function computeHashAndDisplaybytes(bytes, start, end){
-    sha256(bytes.slice(start, end)).then(h => {
-        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block"></span>`)
-        var string = "";
-        bytes.slice(start, end).forEach(c => string+=String.fromCharCode(c))
-        $(`#${h}`).text(string)
-     })
 }
-
-$("#bdtp").click(async function(e){
-    resetUI()
-    if (chrome.sockets == undefined){
-        displayBytes(hc)
-        return
-    }
-    pointer = parsePointer($("#pointer").val())
-    if(pointer == null){
-        bdtpError("Please enter a pointer")
-        return
-    }
-    else if(pointer.chain != "WAV"){
-        bdtpError("Chain not supported")
-        return
-    }
-    console.log("trying to set up socket...")
-    chrome.sockets.tcp.create({}, function(createInfo) {
-        SOCKET_ID = createInfo.socketId
-        chrome.sockets.tcp.connect(SOCKET_ID,
-          "localhost", 4444, sendDataHandler)
-      })
-})
 
 function resetUI(){
     $("#transactionDiv").fadeOut(500)
@@ -190,6 +137,91 @@ $(document).on("mouseleave", ".bdtp-block", function(e){
     }
 })
 
+
+
+/*****socket********/
+var SOCKET_ID = 0
+
 $("#pointer").change(function (){
     enableFetchBtn()
 })
+
+function listen(socketId){
+    console.log("ready to receive data")
+}
+
+function parsePointer(pointer){
+    if(pointer == ""){
+        return null
+    }
+
+    //console.log("fetching at: " + pointer)
+    return {chain: pointer.substring(0,3), add: pointer.substring(3)}
+}
+
+function onAccept(){    
+    console.log("accepted")
+    var ptrStr = parsePointer($("#pointer").val())
+    if (ptrStr == null){
+        return
+    }
+    ptrStr.add = base58.decode(ptrStr.add)
+
+    buff = new ArrayBuffer(ptrStr.chain.length + ptrStr.add.length + 4)
+    
+    buffArr = new Uint8Array(buff)
+    for  (i = 0; i< buffArr.length; i++){
+        if (i<3){
+            buffArr[i] = ptrStr.chain.charCodeAt(i)
+        }
+        if(i>=3 && i < 29){
+          buffArr[i] = ptrStr.add[i-3]
+        }
+        if (i>= 29){
+          buffArr[i] =0
+        }
+    }
+
+    chrome.sockets.tcp.send(SOCKET_ID, buffArr, listen)
+}
+
+function Handler(info){
+    if (info.socketId == SOCKET_ID){
+        //4096bytes
+        var data = new Uint8Array(info.data)
+        if(dataSize === -1){
+            var s = parseInt(data.slice(0,4))
+            dataSize = s
+            data = data.slice(4)
+        }
+
+        console.log("try to display bytes")
+        fetchAndDisplayBytes(data)
+    }  
+}
+
+$("#bdtp").click(async function(e){
+    resetUI()
+
+    if (chrome.sockets == undefined){
+        console.log("google socket undefined")
+        return
+    }
+
+    if ($("#pointer").val()==""){
+        return
+    }
+    connectSocket()
+})
+
+function connectSocket(){
+    console.log("trying to set up socket...")
+    chrome.sockets.tcp.create({}, function(createInfo) {
+        SOCKET_ID = createInfo.socketId
+        chrome.sockets.tcp.connect(SOCKET_ID,"localhost", 4444, onAccept)
+    })
+    chrome.sockets.tcp.onReceive.addListener(Handler);
+
+    chrome.sockets.tcp.onReceiveError.addListener(e => console.log(e))
+    //destroysocket
+}

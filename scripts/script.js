@@ -52,7 +52,7 @@ async function validateTxs(ids, bytesArray, i, validated) {
     var isValid = await confirmTxContent(bytesArray[i], ids[i])
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
-        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 1000)
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10)
     }else{
         validated = isValid? validated+1: validated
         showValidationStatus(validated === ids.length)
@@ -79,7 +79,7 @@ function showValidationStatus(isValid){
 }
 
 async function confirmTxContent(attachement, id){
-    var h = await sha256(attachement)
+    var h = await base58.sha256(attachement)
     var txEl = $(`#i-${id}`)
     var hEl = $(`#${h}`)
 
@@ -118,7 +118,7 @@ function showAddress(pointer){
 
 $(document).on("mouseenter", "tr", async function(e){
     id = this.id.substring(3, this.id.length)
-    h = await sha256($(`#attachement-${this.id}`).text())
+    h = await base58.sha256($(`#attachement-${this.id}`).text())
     bdtpBlock = $(`#${h}`)
     if(bdtpBlock.length){
         bdtpBlock.addClass("green")
@@ -127,21 +127,13 @@ $(document).on("mouseenter", "tr", async function(e){
 
 $(document).on("mouseleave", "tr", async function(e){
     id = this.id.substring(3, this.id.length)
-    h = await sha256($(`#attachement-${id}`).text())
+    h = await base58.sha256($(`#attachement-${id}`).text())
     bdtpBlock= $(`#${h}`)
 
     if(bdtpBlock.length){
         bdtpBlock.removeClass("green")
     }
 })
-
-async function sha256(message) {
-
-    const hashBuffer = await crypto.subtle.digest('SHA-256', new Uint8Array(message))
-    const hashArray = Array.from(new Uint8Array(hashBuffer))          
-    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('') 
-    return hashHex
-}
 
 function txProgressBarUpdater(length, i) {
     var el = $("#progress-bar")

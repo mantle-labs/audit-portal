@@ -77,4 +77,12 @@ var base58 = {
 
         return ans;
     },
+
+    sha256: async function (message) {
+
+        const hashBuffer = await crypto.subtle.digest('SHA-256', new Uint8Array(message))
+        const hashArray = Array.from(new Uint8Array(hashBuffer))          
+        const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('') 
+        return hashHex
+    }
 };
