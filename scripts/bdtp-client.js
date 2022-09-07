@@ -30,15 +30,9 @@ function computeHashAndDisplaybytes(bytes){
 }
 
 async function processChunk(chunk){
-    console.log("proccessing chunks ")
-    console.log(remainingBytes == undefined)
-    console.log(chunk)
-
     var currentChunk = remainingBytes == undefined ? chunk :remainingBytes.concat(Array.from(chunk))
-    console.log(currentChunk)
 
     var offset = 0
-    console.log("for loop")
     for (var i = 0; i<30;i++){
 
         if(offset>currentChunk.length){
@@ -46,22 +40,14 @@ async function processChunk(chunk){
         }
 
         if(currentChunk.length < offset + 140){
-            console.log("**********************************")
-            console.log(readCount + 140 < dataSize)
-            console.log(readCount)
-            console.log(dataSize)
             if (readCount + 140 < dataSize){
-                console.log("R")
                 return currentChunk.slice(offset, currentChunk.length)
             }
-            console.log(":)" + i)
             end = currentChunk.length
             
         }else{
             end = offset +140
         }
-
-        console.log("computing hash "+offset +"   "+end)
         var bytes = currentChunk.slice(offset, end)
         computeHashAndDisplaybytes(bytes)
 
@@ -101,9 +87,6 @@ function disableFetchBtn(){
 
 function enableFetchBtn(){
     $("#bdtp").attr("disabled", false)
-}
-function bytesToString(bytes){
-
 }
 
 function resetUI(){
@@ -155,7 +138,6 @@ function parsePointer(pointer){
         return null
     }
 
-    //console.log("fetching at: " + pointer)
     return {chain: pointer.substring(0,3), add: pointer.substring(3)}
 }
 

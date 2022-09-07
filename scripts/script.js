@@ -18,13 +18,11 @@ function showTransactionDiv(){
 async function fetchFromWaves(pointer) {
     var ids = []
     var bytesArray = []
-    var length = 0
     await $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
         data[0].forEach(async (tx, i) => {
             ids.push(tx.id)
             bytes = base58.decode(tx.attachment)
             bytesArray.push(bytes)
-            length+=bytes.length
             var string = ""
             bytes.forEach(c => string+=String.fromCharCode(c))
             $("tbody").append(`
@@ -45,11 +43,12 @@ async function fetchFromWaves(pointer) {
 
 async function validateTxs(ids, bytesArray, i, validated) {
     if($("#chain-address").text()===""){
-        console.log("here")
         return
     }
-    txProgressBarUpdater(ids.length, i+1)
     var isValid = await confirmTxContent(bytesArray[i], ids[i])
+    if (isValid){
+        txProgressBarUpdater(ids.length, i+1)
+    }
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
         setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10)
@@ -90,7 +89,6 @@ async function confirmTxContent(attachement, id){
         return true
     }
     else{
-        console.log(h)
         txEl.removeClass().addClass("fa fa-times fa-2x red-text")
         return false
     }
@@ -138,6 +136,6 @@ $(document).on("mouseleave", "tr", async function(e){
 function txProgressBarUpdater(length, i) {
     var el = $("#progress-bar")
     var width = i/length*100
-    el.animate({width: `${width}%`}, 1000)
+    el.css({width: `${width}%`})
     $("#transaction-counter").text(`${i}/${length} Transactions processed`)
 }
