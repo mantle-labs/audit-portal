@@ -179,10 +179,14 @@ function Handler(info){
 
         console.log("try to display bytes")
         fetchAndDisplayBytes(data)
+        chrome.sockets.tcp.disconnect(info.socketId)        
     }  
 }
 
 $("#bdtp").click(async function(e){
+    remainingBytes = []
+    dataSize = -1
+    readCount = 0
     resetUI()
 
     if (chrome.sockets == undefined){
@@ -205,5 +209,4 @@ function connectSocket(){
     chrome.sockets.tcp.onReceive.addListener(Handler);
 
     chrome.sockets.tcp.onReceiveError.addListener(e => console.log(e))
-    //destroysocket
 }
