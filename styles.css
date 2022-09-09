@@ -6,6 +6,9 @@ a {
   color: black;
   text-decoration: none; /* no underline */
 }
+.btn-dark{
+  background-image: #1F1F1F;
+}
 
 .list-group-item.active {
     background-color: #212529;
@@ -20,6 +23,32 @@ table {
   min-height: 100px;
   overflow-y: auto;
   max-height: 300px;
+}
+
+.maroon {
+  background-color: #551c27;
+}
+
+.white-text{
+  color: white;
+}
+
+.title-font{
+  font: sans-serif;
+  font-weight: 500;
+  font-size: 35px;
+  line-height: 56px;
+}
+
+.fs-it-btn-vertical-line {
+  text-align:left;
+  padding: 4px 0 5px 10px;
+  margin-left: 10px;
+  border-left: 1px solid #a2a2a2;
+}
+
+.text-font{
+  font: georgia;
 }
 
 #progress {
