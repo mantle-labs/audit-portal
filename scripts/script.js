@@ -79,22 +79,22 @@ function showValidationStatus(isValid){
 
 async function confirmTxContent(attachement, id){
     var h = await base58.sha256(attachement)
-    var txEl = $(`#i-${id}`)
-    var hEl = $(`#${h}`)
+    var txElem = $(`#i-${id}`)
+    var hElem = $(`#${h}`)
 
-    if(hEl.length === 1){
+    if(hElem.length === 1){
         $(`#${h}`).addClass('green')
         setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
-        txEl.removeClass().addClass("fa fa-check fa-2x green-text")
+        txElem.removeClass().addClass("fa fa-check fa-2x green-text")
         return true
     }
     else{
-        txEl.removeClass().addClass("fa fa-times fa-2x red-text")
+        txElem.removeClass().addClass("fa fa-times fa-2x red-text")
         return false
     }
 }
 
-function showChainLogo(pointer){
+function showWavesLogo(pointer){
     $("#chain-logo-div").fadeOut(500, ()=> {
         $("#chain-logo-div").empty()
         $("#chain-logo-div").append(`<a href="https://testnet.wavesexplorer.com/" target="_blank"><img src="img/waves-logo.svg" height="45px" class="col-12"><span>Waves Network</span></a>`)
