@@ -22,7 +22,7 @@ var readCount = 0
 function computeHashAndDisplaybytes(bytes){
 
     h = base58.sha256(bytes).then(h => {
-        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block">${bytes}</span>`)
+        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block text-font">${bytes}</span>`)
         var string = "";
         bytes.forEach(c => string+=String.fromCharCode(c))
         $(`#${h}`).text(string)
@@ -92,7 +92,7 @@ function enableFetchBtn(){
 function resetUI(){
     $("#transactionDiv").fadeOut(500)
     $("#bdtp-data").empty()
-    $("#bdtp-data").append(`<span class="justify-content-center align-items-center"><b id="bdtp-message">Waiting for bdtp data...</b></span>`)
+    $("#bdtp-data").append(`<span class="justify-content-center align-items-center text-font"><b id="bdtp-message">Waiting for bdtp data...</b></span>`)
     $("#chain-logo-div").empty()
     $("#arrowDiv").empty()
     $("#chain-address").empty()

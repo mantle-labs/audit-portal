@@ -26,7 +26,7 @@ async function fetchFromWaves(pointer) {
             var string = ""
             bytes.forEach(c => string+=String.fromCharCode(c))
             $("tbody").append(`
-                <tr id="tx-${tx.id}" style="display: none">
+                <tr id="tx-${tx.id}" class="text-font" style="display: none">
                     <th scope="row">${i}</th>
                     <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
                     <td id="attachement-${tx.id}"></td>
@@ -74,7 +74,7 @@ function showValidationStatus(isValid){
     var icon = isValid? "fa fa-check": "fa fa-times"
     var message = isValid? "Valid": "Invalid"
     $("#validate").empty()
-    $("#validate").append(`${message}<i class="${icon}"></i>`)
+    $("#validate").append(`${message} <i class="${icon}"></i>`)
 }
 
 async function confirmTxContent(attachement, id){
@@ -83,8 +83,9 @@ async function confirmTxContent(attachement, id){
     var hEl = $(`#${h}`)
 
     if(hEl.length === 1){
-        $(`#${h}`).addClass('green')
-        setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
+        hEl.addClass('green')
+        hEl.attr('id', `bdtp-${id}`)
+        setTimeout(()=> $(`#bdtp-${id}`).removeClass("green"), 500)
         txEl.removeClass().addClass("fa fa-check fa-2x green-text")
         return true
     }
@@ -116,20 +117,17 @@ function showAddress(pointer){
 
 $(document).on("mouseenter", "tr", async function(e){
     id = this.id.substring(3, this.id.length)
-    h = await base58.sha256($(`#attachement-${this.id}`).text())
-    bdtpBlock = $(`#${h}`)
-    if(bdtpBlock.length){
-        bdtpBlock.addClass("green")
+    bdtpChunk = $(`#bdtp-${id}`)
+    if(bdtpChunk.length){
+        bdtpChunk.addClass("green")
     }
 })
 
 $(document).on("mouseleave", "tr", async function(e){
     id = this.id.substring(3, this.id.length)
-    h = await base58.sha256($(`#attachement-${id}`).text())
-    bdtpBlock= $(`#${h}`)
-
-    if(bdtpBlock.length){
-        bdtpBlock.removeClass("green")
+    bdtpChunk = $(`#bdtp-${id}`)
+    if(bdtpChunk.length){
+        bdtpChunk.removeClass("green")
     }
 })
 

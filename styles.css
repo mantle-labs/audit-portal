@@ -15,14 +15,20 @@ a {
     border-color: #212529;
 }
 
-table {
-    table-layout:fixed;
+table{
+  table-layout:fixed;
+}
+
+.scrollable-table {
+  display: block;
+  overflow-y: auto;
+  max-height: 450px;
 }
 
 .scrollable{
   min-height: 100px;
   overflow-y: auto;
-  max-height: 300px;
+  max-height: 250px;
 }
 
 .maroon {
@@ -41,14 +47,15 @@ table {
 }
 
 .fs-it-btn-vertical-line {
-  text-align:left;
+  text-align:left, serif;
   padding: 4px 0 5px 10px;
   margin-left: 10px;
   border-left: 1px solid #a2a2a2;
 }
 
 .text-font{
-  font: georgia;
+  font-family: "Times New Roman", Times, serif;
+  font-size: small;
 }
 
 #progress {
@@ -68,6 +75,7 @@ table {
 #transaction-counter{
   height: 32px;
 }
+
 
 table td {
     overflow:hidden;
