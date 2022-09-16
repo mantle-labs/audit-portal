@@ -51,7 +51,7 @@ async function validateTxs(ids, bytesArray, i, validated) {
     }
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
-        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10)
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 500)
     }else{
         validated = isValid? validated+1: validated
         showValidationStatus(validated === ids.length)
