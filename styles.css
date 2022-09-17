@@ -31,8 +31,17 @@ table{
   max-height: 250px;
 }
 
-.maroon {
-  background-color: #551c27;
+.background {
+  background-image: url('img/background-wave-orig2.svg'), url('img/background.svg');
+  background-position: center 250px, center center;
+  background-repeat: no-repeat;
+  background-size: 2547px 980px, cover;
+  background-blend-mode: color-dodge;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 93vh!important
 }
 
 .white-text{

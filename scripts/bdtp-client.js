@@ -59,7 +59,7 @@ async function processChunk(chunk){
 function fetchAndDisplayBytes(data){
     disableFetchBtn()
     $("#bdtp-data").empty()
-
+    
     //call bdtp
     processChunk(data).then(remaining => {
         remainingBytes = Array.from(remaining)
