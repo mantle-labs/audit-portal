@@ -105,7 +105,9 @@ function resetUI(){
 }
 
 $(document).on("mouseenter", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp-", "")
+    tx = $(`#tx-${id}`)
+
     if(tx.length){
         tx.addClass("green")
         $(e.target).addClass("green")
@@ -113,7 +115,9 @@ $(document).on("mouseenter", ".bdtp-block", function(e){
 })
 
 $(document).on("mouseleave", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp", "tx")
+    tx = $(`#${id}`)
+    
     if(tx.length){
         tx.removeClass("green")
         $(e.target).removeClass("green")
