@@ -94,7 +94,7 @@ async function confirmTxContent(attachement, id){
     }
 }
 
-function showWavesLogo(pointer){
+function showChainLogo(pointer){
     $("#chain-logo-div").fadeOut(500, ()=> {
         $("#chain-logo-div").empty()
         $("#chain-logo-div").append(`<a href="https://testnet.wavesexplorer.com/" target="_blank"><img src="img/waves-logo.svg" height="45px" class="col-12"><span>Waves Network</span></a>`)
