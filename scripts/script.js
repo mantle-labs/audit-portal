@@ -1,103 +1,203 @@
 var wavesTestnet = ['https://nodes-testnet.wavesnodes.com', 'https://testnode2.wavesnodes.com', 'https://testnode3.wavesnodes.com', 'https://testnode4.wavesnodes.com']
 var wavesMainnet = ['https://nodes.wavesexplorer.com']
 
-$(document).on("click", ".list-group-item", function(e) {
-    $("li").removeClass("active")
-    $(e.target).addClass("active")
-
-    var url = $(e.target).text()
-
-    $("#nodeUrl").val(url)
+$("#validate").click(function(e){
+    disableValidate()
+    showTransactionDiv()
+    $("#chain-address").fadeOut(500)
+    $("tbody").empty()
+    $("#arrowDiv").empty()
+    showChainLogo()
 })
 
-$("#search").click(function(e){
-    $("#tansactions-table tbody tr").fadeOut(500, function(){
-        $("#tansactions-table tbody tr").remove()
-    })
+function showTransactionDiv(){
+    $("#transactionDiv").fadeIn(500)
+}
 
-    setTimeout(function(){
-        var node = $("#nodeUrl").val()
-        var pointer = parsePointer($("#pointer").val())
-
-        if (node == '' || pointer == ''){
-            alert("node url or pointer is not set.")
-            return
-        }
-        if (pointer.chain != "WAV"){
-            alert("chain not suported")
-            return
-        }
-        
-        $.get(`${node}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
-            data[0].forEach((tx, i) => {
-                bytes = base58.decode(tx.attachment)
-                sha256(new Uint8Array(bytes)).then(h => {
-                    $("tbody").append(`
-                    <tr id="tx-${h}">
-                        <th scope="row">${i}</th>
-                        <td>${tx.id}</td>
-                        <td>${h}</td>
-                        <td>${tx.timestamp}</td>
-                        <td>${new Date(tx.timestamp)}</td>
-                    </tr>`).fadeIn(1000)
-                })
-                
-                 
-            })
-        }).fail(function(){alert("cannot make call")});
-    }, 600)
-})
-
-$("#wavesMainnet").click(function(e){
-    fillListGroup(wavesMainnet)
-})
-
-$("#wavesTestnet").click(function(e){
-    fillListGroup(wavesTestnet)
-})
-
-function fillListGroup(links){
-    $("#networkLinks").fadeOut(500, function(){
-       $("#networkLinks").empty()
-
-       var isFirst = true
-       $("#nodeUrl").val(links[0])
-       for (let i = 0; i < links.length; i++){
-           var active = isFirst ? "active" : ""
-           $("#networkLinks").append(`<li class="list-group-item ${active}">${links[i]}</li>`).fadeIn(500)
-           isFirst = false
-       }
+async function fetchFromWaves(pointer) {
+    var ids = []
+    var bytesArray = []
+    $.get(`${wavesTestnet[0]}/transactions/address/${pointer.add}/limit/1000`, function(data, status){
+        var htmlToAppend = ""
+        data[0].forEach((tx, i) => {
+            ids.push(tx.id)
+            bytes = base58.decode(tx.attachment)
+            bytesArray.push(bytes)
+            var data = base58.string(bytes)
+            htmlToAppend += `
+            <tr id="tx-${tx.id}">
+                <th scope="row">${i}</th>
+                <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
+                <td id="attachement-${tx.id}">${data}</td>
+                <td>${new Date(tx.timestamp)}</td>
+                <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin fa-2x"></i></td>
+            </tr>
+        `
+        })
+        $("tbody").append(htmlToAppend)
+        validateTxs(ids, bytesArray, 0, 0)
+    }).fail(function(){
+        alert("cannot make call")
     })
 }
 
-$(document).on("mouseenter", "tr", function(e){
-    h = this.id.substring(3, this.id.length)
-    bdtpBlock = $(`#${h}`)
+async function validateTxs(ids, bytesArray, i, validated) {
+    if($("#chain-address").text()===""){
+        return
+    }
+    var isValid = await confirmTxContent(bytesArray[i], ids[i])
+    if (isValid){
+        txProgressBarUpdater(ids.length, i+1)
+    }
+    if(i+1 < ids.length ){
+        validated = isValid? validated+1: validated
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10)
+    }else{
+        validated = isValid? validated+1: validated
+        showValidationStatus(validated === ids.length)
+    }
+}
 
+function disableValidate(){
+    $("#validate").attr("disabled", true)
+    $("#validate").empty()
+    $("#validate").append(`Validating... <i class="fa fa-circle-notch fa-spin"></i>`)
+}
+
+function resetValidate(){
+    $("#validate").attr("disabled", true)
+    $("#validate").empty()
+    $("#validate").append(`Validate Data`)
+}
+
+function showValidationStatus(isValid){
+    var icon = isValid? "fa fa-check": "fa fa-times"
+    var message = isValid? "Valid": "Invalid"
+    $("#validate").empty()
+    $("#validate").append(`${message}<i class="${icon}"></i>`)
+}
+
+async function confirmTxContent(attachement, id){
+    var h = await base58.sha256(attachement)
+    var txElem = $(`#i-${id}`)
+    var hElem = $(`#${h}`)
+
+    if(hElem.length === 1){
+        $(`#${h}`).addClass('green')
+        setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
+        txElem.removeClass().addClass("fa fa-check fa-2x green-text")
+        return true
+    }
+    else{
+        txElem.removeClass().addClass("fa fa-times fa-2x red-text")
+        return false
+    }
+}
+
+function showChainLogo(){
+    var pointer = bdtp_helper.parsePointer($("#pointer").val())
+    $("#chain-logo-div").fadeOut(500, ()=> {
+        $("#chain-logo-div").empty()
+        $("#chain-logo-div").append(`<a href="https://testnet.wavesexplorer.com/" target="_blank"><img src="img/waves-logo.svg" height="45px" class="col-12"><span>Waves Network</span></a>`)
+        $("#chain-logo-div").fadeIn(1000, ()=> showArrow(pointer))
+    })
+}
+
+function showArrow(pointer){
+    $("#arrowDiv").empty()
+    $("#arrowDiv").append(`<div class="arrow" ><div class="head"></div></div>`)
+    setTimeout(()=> showAddress(pointer), 3000)
+}
+function showAddress(pointer){
+    $("#chain-address").empty()
+    $("#chain-address").append(`<a href="https://testnet.wavesexplorer.com/address/${pointer.add}/tx" target="_blank">${pointer.add}</a>`)
+    $("#chain-address").fadeIn(500, ()=> fetchFromWaves(pointer))
+}
+
+
+$(document).on("mouseenter", "tr", async function(e){
+    id = this.id.substring(3, this.id.length)
+    h = await base58.sha256($(`#attachement-${this.id}`).text())
+    bdtpBlock = $(`#${h}`)
     if(bdtpBlock.length){
         bdtpBlock.addClass("green")
-        $(`#${this.id}`).addClass("green")
     }
 })
 
-$(document).on("mouseleave", "tr", function(e){
-    h = this.id.substring(3, this.id.length)
+$(document).on("mouseleave", "tr", async function(e){
+    id = this.id.substring(3, this.id.length)
+    h = await base58.sha256($(`#attachement-${id}`).text())
     bdtpBlock= $(`#${h}`)
 
     if(bdtpBlock.length){
         bdtpBlock.removeClass("green")
-        $(`#${this.id}`).removeClass("green")
     }
 })
 
-async function sha256(msgBuffer) {
-    // hash the message
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-
-    // convert ArrayBuffer to Array
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-    // convert bytes to hex string                  
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
+function txProgressBarUpdater(length, i) {
+    var el = $("#progress-bar")
+    var width = i/length*100
+    el.css({width: `${width}%`})
+    $("#transaction-counter").text(`${i}/${length} Transactions processed`)
 }
+
+/*******************************************************************
+ * 
+ * BDTP UI box
+ * 
+ ******************************************************************/
+function enableValidateBtn(){
+    $("#validate").attr("disabled", false)
+}
+
+function disableFetchBtn(){
+    $("#bdtp").attr("disabled", true)
+}
+
+function enableFetchBtn(){
+    $("#bdtp").attr("disabled", false)
+}
+
+function bdtpError(message){
+    $("#bdtp-message").empty()
+    $("#bdtp-message").text(message)
+}
+
+function resetUI(){
+    $("#transactionDiv").fadeOut(500)
+    $("#bdtp-data").empty()
+    $("#bdtp-data").append(`<span class="justify-content-center align-items-center"><b id="bdtp-message">Waiting for bdtp data...</b></span>`)
+    $("#chain-logo-div").empty()
+    $("#arrowDiv").empty()
+    $("#chain-address").empty()
+    $("#progress-bar").empty()
+    $("#progress-bar").css({'width': "0"})
+    $("#progress-bar").stop()
+    $("#transaction-counter").text(`${0}/${0} Transactions processed`)
+
+    resetValidate()
+}
+$("#pointer").change(function (){
+    enableFetchBtn()
+})
+$("#bdtp").click(async function(e){
+    resetUI()
+})
+
+$(document).on("mouseenter", ".bdtp-block", function(e){
+    tx = $(`#tx-${e.target.id}`)
+    if(tx.length){
+        tx.addClass("green")
+        $(e.target).addClass("green")
+    }
+})
+
+$(document).on("mouseleave", ".bdtp-block", function(e){
+    tx = $(`#tx-${e.target.id}`)
+    if(tx.length){
+        tx.removeClass("green")
+        $(e.target).removeClass("green")
+    }
+})
+
+

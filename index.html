@@ -5,79 +5,87 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Mantle Audit Portal</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
         <link rel="stylesheet" href="styles.css">
     </head>
-    <body>
+    <body class="d-flex flex-column min-vh-100 mt-3">
         <div class="container">
             <div class="row row-cols-1">
-                <div class="col text-center">
-                    <h1>Welcome to mantle audit portal !</h1>
+                <div class="col text-center mb-3">
+                    <h1>Welcome to Mantle Audit Portal!</h1>
                 </div>
             </div>
 
-            <div class="row row-cols-1">
-                <div class="col text-center">
-                    <label>Pointer: </label>
-                    <input id="pointer" type="text" value="WAV3MwUmmsjsJc9uirBtfbErVVxz14n9SfdRVw">
-                    <button id="search" class="btn btn-dark" type="button">Search</button>
+            <div class="input-group mb-5">
+                <input type="text" class="form-control" placeholder="Enter pointer here" id="pointer">
+                <div class="input-group-append">
+                    <button class="input-group-text btn btn-dark" id="bdtp" style="width: 15vw;border-radius: 0rem 0.375rem 0.375rem 0rem;">Fetch</button>
                 </div>
             </div>
-
-            <div class="row row-cols-2">
-                <div class="col text-start">
-                    <button class="btn btn-dark dropdown-toggle" type="button" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        Networks
-                      </button>
-
-                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a id="wavesMainnet" class="dropdown-item" href="#">Waves Mainnet </a></li>
-                        <li><a id="wavesTestnet" class="dropdown-item" href="#">Waves Testnet </a></li>
-                      </ul>
+            <div class="card mb-5">
+                <div class="card-header text-center">
+                    <h2>Blockchain Data Transfer Protocol server</h2>
                 </div>
-                <div class="col text-end">
-                    <label>Node url: </label>
-                    <input id="nodeUrl" value="" disabled> </label>
+                <div id="bdtp-data" class="text-center scrollable">
+                    <span class="justify-content-center align-items-center"><b id="bdtp-message">Waiting for bdtp data...</b></span>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col text-center align-top">
-                    <h3>Available nodes for the selected network</h3>
+            <div class="row mb-2 justify-content-center p-0">
+                <button id="validate" class="col-4 btn btn-dark" disabled>Validate Data</button>
+            </div>
+            <div class="card mb-2 mt-5" id="transactionDiv" style="display: none">
+                <div class="card-header text-center">
+                    <h2>Transactions</h2>
                 </div>
-            </div>
-            <div class="row">
-                <ul id="networkLinks" class="list-group list-group-flush">
-                  </ul>
-            </div>
-            <div class="row text-center">
-                <h2>Transactions</h2>
-            </div>
-            <div class="row">
-                <table id="tansactions-table" class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col" style="width: 2%;">#</th>
-                        <th scope="col">Transaction Id</th>
-                        <th scope="col">Data Hash</th>
-                        <th scope="col">Timestamp</th>
-                        <th scope="col">Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                  </table>
-            </div>
-
-            <div class="row text-center">
-                <h2>Bdtp server</h2>
-            </div>
-            <div class="row text-center">
-                <button id="bdtp" class="btn btn-dark" type="button">fetch data from bdtp</button>
-            </div>
-            <div id="bdtp-data" class="row mb-5">
-
+                <div class="card-body row text-center">
+                    <div id="chain-logo-div" class="col">
+                    </div>
+                    <div id="arrowDiv" class="col mt-3">
+                        
+                    </div>
+                    <div class="col">
+                        <span class="align-middle"><b>Network Address: </b><br></span>
+                        <span class="align-middle" id="chain-address" style="display: none;"></span>
+                    </div>
+                </div>
+                <div class="card-body row">
+                    <div class="col">
+                        <div class="card text-center" id="transaction-counter">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div id="progress" class="card">
+                            <div id="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row card-body">
+                    <table id="tansactions-table col-5" class="table">
+                        <thead>
+                          <tr class="text-center">
+                            <th scope="col" style="width: 4%;">#</th>
+                            <th scope="col">Transaction Id</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Validated</th>
+                          </tr>
+                        </thead>
+                        <tbody class="text-center">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+        <!-- Footer -->
+        <footer class="text-center text-lg-start bg-white text-muted mt-auto">  
+            <div class="text-center p-4">
+                © Mantle Technology 
+                <a class="text-reset fw-bold" href="https://github.com/mantle-labs/audit-portal" target="_blank">Audit Portal</a>
+            </div>
+            <!-- Copyright -->
+        </footer>
+        <!-- Footer -->
 
         <script src="scripts/lib/jquery-1.9.1.min.js"></script>
         <script src="scripts/lib/bootstrap.bundle.min.js"></script>
@@ -85,9 +93,9 @@
         <script src="scripts/utils/jsbn.js"></script>
         <script src="scripts/utils/jsbn2.js"></script>
         <script src="scripts/utils/base58.js"></script>
+        <script src="scripts/utils/bdtp-helper.js"></script>
 
-        <script src="scripts/script.js"></script>
         <script src="scripts/bdtp-client.js"></script>
-
+        <script src="scripts/script.js"></script>
     </body>
 </html>
