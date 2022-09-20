@@ -52,7 +52,7 @@ async function validateTxs(ids, bytesArray, i, validated) {
     }
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
-        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 500)
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10000/ids.length)
     }else{
         validated = isValid? validated+1: validated
         showValidationStatus(validated === ids.length)
@@ -83,11 +83,11 @@ async function confirmTxContent(attachement, id){
     var txElem = $(`#i-${id}`)
     var hElem = $(`#${h}`)
 
-    if(hEl.length === 1){
-        hEl.addClass('green')
-        hEl.attr('id', `bdtp-${id}`)
+    if(hElem.length === 1){
+        hElem.addClass('green')
+        hElem.attr('id', `bdtp-${id}`)
         setTimeout(()=> $(`#bdtp-${id}`).removeClass("green"), 500)
-        txEl.removeClass().addClass("fa fa-check fa-2x green-text")
+        txElem.removeClass().addClass("fa fa-check fa-2x green-text")
         return true
     }
     else{
@@ -132,6 +132,7 @@ $(document).on("mouseleave", "tr", async function(e){
         bdtpChunk.removeClass("green")
     }
 })
+
 
 function txProgressBarUpdater(length, i) {
     var el = $("#progress-bar")
@@ -184,18 +185,18 @@ $("#bdtp").click(async function(e){
 })
 
 $(document).on("mouseenter", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp-", "")
+    tx = $(`#tx-${id}`)
     if(tx.length){
         tx.addClass("green")
-        $(e.target).addClass("green")
     }
 })
 
 $(document).on("mouseleave", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp-", "")
+    tx = $(`#tx-${id}`)
     if(tx.length){
         tx.removeClass("green")
-        $(e.target).removeClass("green")
     }
 })
 
