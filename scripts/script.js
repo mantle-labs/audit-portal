@@ -54,7 +54,7 @@ async function validateTxs(ids, bytesArray, i, validated) {
     }
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
-        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 500)
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 100)
     }else{
         validated = isValid? validated+1: validated
         showValidationStatus(validated === ids.length)
@@ -86,11 +86,11 @@ async function confirmTxContent(attachement, id){
     var hElem = $(`#${h}`)
 
 
-    if(hEl.length === 1){
-        hEl.addClass('green')
-        hEl.attr('id', `bdtp-${id}`)
+    if(hElem.length === 1){
+        hElem.addClass('green')
+        hElem.attr('id', `bdtp-${id}`)
         setTimeout(()=> $(`#bdtp-${id}`).removeClass("green"), 500)
-        txEl.removeClass().addClass("fa fa-check fa-2x green-text")
+        txElem.removeClass().addClass("fa fa-check fa-2x green-text")
         return true
     }
     else{
