@@ -54,7 +54,7 @@ async function validateTxs(ids, bytesArray, i, validated) {
     }
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
-        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 100)
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10000/ids.length)
     }else{
         validated = isValid? validated+1: validated
         showValidationStatus(validated === ids.length)
@@ -187,7 +187,8 @@ $("#bdtp").click(async function(e){
 })
 
 $(document).on("mouseenter", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp-", "")
+    tx = $(`#tx-${id}`)
     if(tx.length){
         tx.addClass("green")
         $(e.target).addClass("green")
@@ -195,7 +196,8 @@ $(document).on("mouseenter", ".bdtp-block", function(e){
 })
 
 $(document).on("mouseleave", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp-", "")
+    tx = $(`#tx-${id}`)
     if(tx.length){
         tx.removeClass("green")
         $(e.target).removeClass("green")
