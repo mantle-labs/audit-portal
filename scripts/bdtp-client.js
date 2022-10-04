@@ -6,7 +6,7 @@ var readCount = 0
 function computeHashAndDisplaybytes(bytes){
 
     h = base58.sha256(bytes).then(h => {
-        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block">${bytes}</span>`)
+        $("#bdtp-data").append(`<span id="${h}" class="bdtp-block text-font">${bytes}</span>`)
         var string = "";
         bytes.forEach(c => string+=String.fromCharCode(c))
         $(`#${h}`).text(string)
@@ -43,7 +43,7 @@ async function processChunk(chunk){
 function fetchAndDisplayBytes(data){
     disableFetchBtn()
     $("#bdtp-data").empty()
-
+    
     //call bdtp
     processChunk(data).then(remaining => {
         remainingBytes = Array.from(remaining)
@@ -52,7 +52,6 @@ function fetchAndDisplayBytes(data){
     enableValidateBtn()
     return
 }
-
 
 
 /*****socket********/

@@ -1,7 +1,10 @@
 {
-    "name":"Mantle audit-portal",
+    "name":"Mantle Audit-Portal",
     "description": "TODO: add description",
     "version": "0.1.0",
+    "icons": {"16": "img/logo-dark.png",
+              "48": "img/logo-dark.png",
+              "128": "img/logo-dark.png"},
     "manifest_version": 3,  
     "app": {
         "background": {

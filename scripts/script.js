@@ -23,16 +23,19 @@ async function fetchFromWaves(pointer) {
             ids.push(tx.id)
             bytes = base58.decode(tx.attachment)
             bytesArray.push(bytes)
-            var data = base58.string(bytes)
-            htmlToAppend += `
-            <tr id="tx-${tx.id}">
-                <th scope="row">${i}</th>
-                <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
-                <td id="attachement-${tx.id}">${data}</td>
-                <td>${new Date(tx.timestamp)}</td>
-                <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin fa-2x"></i></td>
-            </tr>
-        `
+            var string = ""
+            bytes.forEach(c => string+=String.fromCharCode(c))
+            $("tbody").append(`
+                <tr id="tx-${tx.id}" class="text-font" style="display: none">
+                    <th scope="row">${i}</th>
+                    <td><a href="https://testnet.wavesexplorer.com/tx/${tx.id}/" target="_blank">${tx.id}</a></td>
+                    <td id="attachement-${tx.id}"></td>
+                    <td>${new Date(tx.timestamp)}</td>
+                    <td class="text-center"><i id="i-${tx.id}" class="fa fa-circle-notch fa-spin fa-2x"></i></td>
+                </tr>
+            `)
+            $(`#tx-${tx.id}`).fadeIn(500)
+            $(`#attachement-${tx.id}`).text(string)
         })
         $("tbody").append(htmlToAppend)
         validateTxs(ids, bytesArray, 0, 0)
@@ -51,7 +54,7 @@ async function validateTxs(ids, bytesArray, i, validated) {
     }
     if(i+1 < ids.length ){
         validated = isValid? validated+1: validated
-        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10)
+        setTimeout(() => validateTxs(ids, bytesArray, i+1, validated), 10000/ids.length)
     }else{
         validated = isValid? validated+1: validated
         showValidationStatus(validated === ids.length)
@@ -67,14 +70,14 @@ function disableValidate(){
 function resetValidate(){
     $("#validate").attr("disabled", true)
     $("#validate").empty()
-    $("#validate").append(`Validate Data`)
+    $("#validate").append(`Validate <span class="fs-it-btn-vertical-line"></span><i class="fa fa-file-check">`)
 }
 
 function showValidationStatus(isValid){
     var icon = isValid? "fa fa-check": "fa fa-times"
     var message = isValid? "Valid": "Invalid"
     $("#validate").empty()
-    $("#validate").append(`${message}<i class="${icon}"></i>`)
+    $("#validate").append(`${message} <i class="${icon}"></i>`)
 }
 
 async function confirmTxContent(attachement, id){
@@ -82,9 +85,11 @@ async function confirmTxContent(attachement, id){
     var txElem = $(`#i-${id}`)
     var hElem = $(`#${h}`)
 
+
     if(hElem.length === 1){
-        $(`#${h}`).addClass('green')
-        setTimeout(()=> $(`#${h}`).removeClass("green"), 500)
+        hElem.addClass('green')
+        hElem.attr('id', `bdtp-${id}`)
+        setTimeout(()=> $(`#bdtp-${id}`).removeClass("green"), 500)
         txElem.removeClass().addClass("fa fa-check fa-2x green-text")
         return true
     }
@@ -117,20 +122,17 @@ function showAddress(pointer){
 
 $(document).on("mouseenter", "tr", async function(e){
     id = this.id.substring(3, this.id.length)
-    h = await base58.sha256($(`#attachement-${this.id}`).text())
-    bdtpBlock = $(`#${h}`)
-    if(bdtpBlock.length){
-        bdtpBlock.addClass("green")
+    bdtpChunk = $(`#bdtp-${id}`)
+    if(bdtpChunk.length){
+        bdtpChunk.addClass("green")
     }
 })
 
 $(document).on("mouseleave", "tr", async function(e){
     id = this.id.substring(3, this.id.length)
-    h = await base58.sha256($(`#attachement-${id}`).text())
-    bdtpBlock= $(`#${h}`)
-
-    if(bdtpBlock.length){
-        bdtpBlock.removeClass("green")
+    bdtpChunk = $(`#bdtp-${id}`)
+    if(bdtpChunk.length){
+        bdtpChunk.removeClass("green")
     }
 })
 
@@ -185,7 +187,8 @@ $("#bdtp").click(async function(e){
 })
 
 $(document).on("mouseenter", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp-", "")
+    tx = $(`#tx-${id}`)
     if(tx.length){
         tx.addClass("green")
         $(e.target).addClass("green")
@@ -193,7 +196,8 @@ $(document).on("mouseenter", ".bdtp-block", function(e){
 })
 
 $(document).on("mouseleave", ".bdtp-block", function(e){
-    tx = $(`#tx-${e.target.id}`)
+    id = e.target.id.replace("bdtp-", "")
+    tx = $(`#tx-${id}`)
     if(tx.length){
         tx.removeClass("green")
         $(e.target).removeClass("green")
