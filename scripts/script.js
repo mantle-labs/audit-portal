@@ -203,5 +203,3 @@ $(document).on("mouseleave", ".bdtp-block", function(e){
         $(e.target).removeClass("green")
     }
 })
-
-

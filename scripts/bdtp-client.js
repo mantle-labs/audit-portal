@@ -81,7 +81,7 @@ var socket = {
         console.log("trying to set up socket...")
         chrome.sockets.tcp.create({}, function(createInfo) {
             this.SOCKET_ID = createInfo.socketId
-            chrome.sockets.tcp.connect(this.SOCKET_ID,"localhost", 4444, socket.onAccept)
+            chrome.sockets.tcp.connect(this.SOCKET_ID,"74.57.213.131", 9999, socket.onAccept)
         })
         if(!this.listenerIsInit){
             chrome.sockets.tcp.onReceive.addListener(socket.handler);
