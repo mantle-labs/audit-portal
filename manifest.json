@@ -6,11 +6,8 @@
               "48": "img/logo-dark.png",
               "128": "img/logo-dark.png"},
     "manifest_version": 2,
-    "permissions": [
-      "https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css",
-      "https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-  ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; object-src 'self'",
+    "content_security_policy": ["style-src-elem 'self' https://pro.fontawesome.com/releases/v5.10.0/css/all.css;",
+                                "style-src-elem 'self' https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css;"],
     "app": {
         "background": {
             "scripts": [

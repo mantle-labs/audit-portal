@@ -30,7 +30,6 @@ table{
   overflow-y: auto;
   max-height: 250px;
 }
-
 .background {
   background-image: url('img/background-wave-orig2.svg'), url('img/background.svg');
   background-position: center 250px, center center;
