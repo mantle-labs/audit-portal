@@ -1,7 +1,7 @@
 {
     "name":"Mantle Audit-Portal",
     "description": "This chrome app is made by Mantle Technology to audit data through blockchain explorer.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "icons": {"16": "img/logo-dark.png",
               "48": "img/logo-dark.png",
               "128": "img/logo-dark.png"},

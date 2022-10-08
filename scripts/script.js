@@ -70,7 +70,7 @@ function disableValidate(){
 function resetValidate(){
     $("#validate").attr("disabled", true)
     $("#validate").empty()
-    $("#validate").append(`Validate <span class="fs-it-btn-vertical-line"></span><i class="fa fa-file-check">`)
+    $("#validate").append(`Validate <span class="fs-it-btn-vertical-line"></span><i class="fa fa-file">`)
 }
 
 function showValidationStatus(isValid){
